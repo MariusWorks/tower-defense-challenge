@@ -14,8 +14,9 @@ AEnemyBase::AEnemyBase()
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
+	EnemyData.CurrentHealth = EnemyData.MaxHealth;
+
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

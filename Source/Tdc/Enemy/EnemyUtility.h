@@ -7,6 +7,25 @@
 class AEnemyBase;
 
 USTRUCT(BlueprintType)
+struct FEnemyData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	float CurrentHealth = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHealth = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MovementSpeed = 100.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int KillReward = 1;
+	
+};
+
+USTRUCT(BlueprintType)
 struct FWaveUnit
 {
 	GENERATED_BODY()
