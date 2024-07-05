@@ -15,7 +15,7 @@ AEnemyBase::AEnemyBase()
 void AEnemyBase::BeginPlay()
 {
 	EnemyData.CurrentHealth = EnemyData.MaxHealth;
-
+	
 	Super::BeginPlay();
 }
 

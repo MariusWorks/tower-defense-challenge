@@ -20,7 +20,8 @@ enum class EEffectTypes : uint8
 {
 	Default UMETA(DisplayName = "Default"),
 	SpeedReduction UMETA(DisplayName = "Speed Reduction"),
-	DamageOverTime UMETA(DisplayName = "Damage Over Time")
+	DamageOverTime UMETA(DisplayName = "Damage Over Time"),
+	Chaining UMETA(DisplayName = "Chaining1")
 };
 
 USTRUCT(BlueprintType)
