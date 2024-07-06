@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Tdc/Enemy/EnemyUtility.h"
+#include "Tdc/Tower/TowerUtility.h"
 #include "GameSubsystem.generated.h"
 
 class ATowerBase;
@@ -29,12 +30,15 @@ class TDC_API UGameSubsystem : public UGameInstanceSubsystem
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldUpdated, int, InGold);
 
 	// Tower Communication
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerUpgradeRequest, ATowerBase*, InTowerToUpgrade);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerSellRequest, ATowerBase*, InTowerToSell);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerMoveRequest, ATowerBase*, InTowerToMove);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerOffensiveBuyRequest, FTowerOffensiveStruct, InOffensiveTower);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerPassiveBuyRequest, FTowerPassiveStruct, InPassiveTower);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerUpgradeRequest, AActor*, InTowerToUpgrade);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerSellRequest, AActor*, InTowerToSell);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTowerMoveRequest, AActor*, InTowerToMove);
 
 public:
 
+	// Wave Communication
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnPlayerStartWave OnPlayerStartWave;
 
@@ -53,12 +57,20 @@ public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnStartWaveCountdownTimer OnStartWaveCountdownTimer;
 
+	// Stats Communication
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnLivesUpdated OnLivesUpdated;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnGoldUpdated OnGoldUpdated;
 
+	// Tower Communication
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnTowerOffensiveBuyRequest OnTowerOffensiveBuyRequest;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnTowerPassiveBuyRequest OnTowerPassiveBuyRequest;
+	
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnTowerUpgradeRequest OnTowerUpgradeRequest;
 

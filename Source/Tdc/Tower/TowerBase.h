@@ -4,33 +4,48 @@
 
 #include "CoreMinimal.h"
 #include "TowerUtility.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "TowerBase.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class TDC_API ATowerBase : public AActor
 {
 	GENERATED_BODY()
 
-public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
+	USceneComponent* SceneComponent;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Tower Stats")
-	FTowerStats TowerStats;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
+	UStaticMeshComponent* TowerMesh;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Tower Stats", meta = (ExposeOnSpawn))
-	FTowerData TowerData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
+	UStaticMeshComponent* WeaponBaseMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
+	USphereComponent* SphereRadius;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Tower Stats", meta = (ExposeOnSpawn))
-	FDataTableRowHandle TowerRowHandle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
+	UDecalComponent* DecalRange;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Tower State")
-	bool bTowerActive;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateStats);
 
-	UPROPERTY(BlueprintReadWrite, Category = "Tower State")
-	int TowerUpgradeIndex;
+protected:
 
-	UPROPERTY(BlueprintReadWrite, Category = "Tower State", meta = (ExposeOnSpawn))
-	int MaxTowerUpgradeIndex;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
+	UStaticMeshComponent* WeaponPropMesh;
+	
+	UPROPERTY()
+	bool bTowerActive = false;
+
+	UPROPERTY()
+	int TowerUpgradeIndex = 0;
+
+	UPROPERTY()
+	int TowerMaxUpgradeIndex = 0;
+	
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnUpdateStats OnUpdateStats;
 
 public:
 	// Sets default values for this actor's properties
@@ -44,6 +59,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Tower Stats")
-	void SetTowerData(const FTowerData InTowerData) {TowerData = InTowerData;}
+	// Setters
+	UFUNCTION(BlueprintCallable)
+	void SetTowerActive(const bool bInTowerActive) {bTowerActive = bInTowerActive;}
+	
+	UFUNCTION(BlueprintCallable)
+	void SetTowerUpgradeIndex(const int InTowerUpgradeIndex) {TowerUpgradeIndex = InTowerUpgradeIndex;}
+	
+	UFUNCTION(BlueprintCallable)
+	void SetTowerMaxUpgradeIndex(const int InTowerMaxUpgradeIndex) {TowerMaxUpgradeIndex = InTowerMaxUpgradeIndex;}
+
+	// Getters
+	UFUNCTION(BlueprintPure)
+	bool GetTowerActive() const {return bTowerActive;}
+
+	UFUNCTION(BlueprintPure)
+	int GetTowerUpgradeIndex() const {return TowerUpgradeIndex;}
+
+	UFUNCTION(BlueprintPure)
+	int GetTowerMaxUpgradeIndex() const {return TowerMaxUpgradeIndex;}
 };
