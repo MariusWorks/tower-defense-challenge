@@ -25,4 +25,5 @@ Streamed over on https://twitch.tv/mariusworks
 * 1 - Purchase Ballista Tower
 * 2 - Purchase Cannon Tower
 * 3 - Purchase Catapult Tower
+* 4 - Purchase Buff Tower
 * Space - Start Wave
