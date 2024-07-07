@@ -3,15 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TowerInterface.h"
 #include "TowerUtility.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "TowerBase.generated.h"
 
-UCLASS(Abstract)
-class TDC_API ATowerBase : public AActor
+class UTowerSubsystem;
+class UGameSubsystem;
+
+UCLASS(Abstract, NotBlueprintable)
+class TDC_API ATowerBase : public AActor, public ITowerInterface
 {
 	GENERATED_BODY()
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateStats);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
 	USceneComponent* SceneComponent;
@@ -23,59 +29,123 @@ class TDC_API ATowerBase : public AActor
 	UStaticMeshComponent* WeaponBaseMesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
-	USphereComponent* SphereRadius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
 	UDecalComponent* DecalRange;
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateStats);
 
 protected:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
+	USphereComponent* SphereRadius;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
 	UStaticMeshComponent* WeaponPropMesh;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Tower Stats", meta = (ExposeOnSpawn))
+	FTowerStruct TowerStruct;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Tower Stats")
+	FTowerStats TowerStats;
+
+private:
+
+	UPROPERTY()
+	UGameSubsystem* GameSubsystem;
+
+	UPROPERTY()
+	UTowerSubsystem* TowerSubsystem;
 	
 	UPROPERTY()
 	bool bTowerActive = false;
 
 	UPROPERTY()
-	int TowerUpgradeIndex = 0;
+	int UpgradeIndex = 0;
 
 	UPROPERTY()
-	int TowerMaxUpgradeIndex = 0;
+	int MaxUpgradeIndex = 0;
+
+	UPROPERTY()
+	bool bHasTowerBeenUsed = false;
 	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnUpdateStats OnUpdateStats;
 
+	
+	/* Engine Defaults */
 public:
-	// Sets default values for this actor's properties
+
 	ATowerBase();
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
+
 	virtual void Tick(float DeltaTime) override;
 
+	/* ITowerInterface Implementation */
+
+	UFUNCTION()
+	virtual void OnTowerPlaced_Implementation() override;
+
+	UFUNCTION()
+	virtual bool OnTowerUpgrade_Implementation() override;
+
+	UFUNCTION()
+	virtual bool OnTowerSell_Implementation() override;
+
+	UFUNCTION()
+	virtual bool OnTowerMove_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnTowerSelected_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnTowerDeselected_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnTowerDamageDealt_Implementation(float InDamageDealt) override;
+
+	UFUNCTION()
+	virtual void OnTowerKill_Implementation() override;
+
+	UFUNCTION()
+	void OnStatsUpdate();
+
+	/*  */
+	
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void SetTowerActive(const bool bInTowerActive) {bTowerActive = bInTowerActive;}
 	
 	UFUNCTION(BlueprintCallable)
-	void SetTowerUpgradeIndex(const int InTowerUpgradeIndex) {TowerUpgradeIndex = InTowerUpgradeIndex;}
+	void SetUpgradeIndex(const int InUpgradeIndex) {UpgradeIndex = InUpgradeIndex;}
 	
 	UFUNCTION(BlueprintCallable)
-	void SetTowerMaxUpgradeIndex(const int InTowerMaxUpgradeIndex) {TowerMaxUpgradeIndex = InTowerMaxUpgradeIndex;}
+	void SetMaxUpgradeIndex(const int InMaxUpgradeIndex) {MaxUpgradeIndex = InMaxUpgradeIndex;}
 
 	// Getters
 	UFUNCTION(BlueprintPure)
 	bool GetTowerActive() const {return bTowerActive;}
 
 	UFUNCTION(BlueprintPure)
-	int GetTowerUpgradeIndex() const {return TowerUpgradeIndex;}
+	int GetTowerUpgradeIndex() const {return UpgradeIndex;}
 
 	UFUNCTION(BlueprintPure)
-	int GetTowerMaxUpgradeIndex() const {return TowerMaxUpgradeIndex;}
+	int GetTowerMaxUpgradeIndex() const {return MaxUpgradeIndex;}
+
+	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
+	float GetTowerRange() const {return TowerStruct.TowerData[UpgradeIndex].Range;}
+
+	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
+	int GetTowerCost() const {return TowerStruct.TowerData[UpgradeIndex].Cost;}
+
+	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
+	float GetTowerCooldown() const {return TowerStruct.TowerData[UpgradeIndex].Cooldown;}
+
+	// Helpers
+	UFUNCTION(BlueprintPure)
+	int GetTowerAccumulatedCost();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateRadius();
 };

@@ -6,18 +6,15 @@
 #include "TowerBase.h"
 #include "TowerPassive.generated.h"
 
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class TDC_API ATowerPassive : public ATowerBase
 {
 	GENERATED_BODY()
 
-public:
+protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Tower Stats", meta = (ExposeOnSpawn))
-	FTowerPassiveStruct TowerPassiveStruct;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Tower Stats")
-	FTowerPassiveStats TowerPassiveStats;
+	UPROPERTY(BlueprintReadOnly, Category = "Tower")
+	TArray<ATowerBase*> Towers;
 
 public:
 	// Sets default values for this actor's properties
@@ -30,7 +27,22 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION()
+	virtual void OnTowerPlaced_Implementation() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Tower Stats")
-	void SetTowerData(const FTowerPassiveStruct InTowerPassiveStruct) {TowerPassiveStruct = InTowerPassiveStruct;}
+	UFUNCTION()
+	virtual bool OnTowerSell_Implementation() override;
+
+	UFUNCTION()
+	virtual bool OnTowerMove_Implementation() override;
+
+protected:
+
+	UFUNCTION()
+	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
 };

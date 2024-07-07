@@ -6,7 +6,10 @@
 #include "TowerBase.h"
 #include "TowerOffensive.generated.h"
 
-UCLASS()
+class AEnemyBase;
+class AProjectileBase;
+
+UCLASS(Abstract, Blueprintable)
 class TDC_API ATowerOffensive : public ATowerBase
 {
 	GENERATED_BODY()
@@ -14,26 +17,35 @@ class TDC_API ATowerOffensive : public ATowerBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower", meta = (AllowPrivateAccess))
 	USceneComponent* ProjectileSpawn;
 
+protected:
+	UPROPERTY(BlueprintReadWrite, Category = "Tower | Offensive")
+	AProjectileBase* SpawnedProjectile;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Tower")
+	TArray<AEnemyBase*> Enemies;
+
 public:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Tower Stats", meta = (ExposeOnSpawn))
-	FTowerOffensiveStruct TowerOffensiveStruct;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Tower Stats")
-	FTowerOffensiveStats TowerOffensiveStats;
-
-public:
-	// Sets default values for this actor's properties
 	ATowerOffensive();
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
+
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Tower Stats")
-	void SetTowerData(const FTowerOffensiveStruct InTowerOffensiveStruct) {TowerOffensiveStruct = InTowerOffensiveStruct;}
+protected:
+	
+	UFUNCTION()
+	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	/* ITowerInterface Implementation */
+
+	virtual bool OnTowerSell_Implementation() override;
+	
 };

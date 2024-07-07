@@ -3,25 +3,63 @@
 
 #include "TowerPassive.h"
 
-
-// Sets default values
 ATowerPassive::ATowerPassive()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	SphereRadius->OnComponentBeginOverlap.AddDynamic(this, &ATowerPassive::OnComponentBeginOverlap);
+	SphereRadius->OnComponentEndOverlap.AddDynamic(this, &ATowerPassive::OnComponentEndOverlap);
 }
 
-// Called when the game starts or when spawned
 void ATowerPassive::BeginPlay()
 {
-	TowerMaxUpgradeIndex = TowerPassiveStruct.TowerData.Num() - 1;
-	
 	Super::BeginPlay();
+
+	SetActorTickEnabled(false);
 }
 
-// Called every frame
 void ATowerPassive::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ATowerPassive::OnTowerPlaced_Implementation()
+{
+	// For each apply buff
+	
+	Super::OnTowerPlaced_Implementation();
+}
+
+bool ATowerPassive::OnTowerSell_Implementation()
+{
+	// For each remove buff
+	
+	return Super::OnTowerSell_Implementation();
+}
+
+bool ATowerPassive::OnTowerMove_Implementation()
+{
+	// For each remove buff
+	
+	return Super::OnTowerMove_Implementation();
+}
+
+void ATowerPassive::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ATowerBase* OverlappingTower = Cast<ATowerBase>(OtherActor);
+	if (OverlappingTower)
+	{
+		Towers.AddUnique(OverlappingTower);
+		// @RECALL Add buff??
+	}
+}
+
+void ATowerPassive::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	ATowerBase* OverlappingTower = Cast<ATowerBase>(OtherActor);
+	if (OverlappingTower && Towers.Contains(OverlappingTower))
+	{
+		Towers.Remove(OverlappingTower);
+	}
 }
 

@@ -9,6 +9,14 @@ class ATowerPassive;
 class ATowerBase;
 
 UENUM(BlueprintType)
+enum class ETowerTypes : uint8
+{
+	Offensive,
+	Defensive,
+	Passive
+};
+
+UENUM(BlueprintType)
 enum class EDamageTypes : uint8
 {
 	Physical,
@@ -76,19 +84,7 @@ struct FPassiveEffect
 };
 
 USTRUCT(BlueprintType)
-struct FTowerData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Cost = 0;
-
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	float Range = 200.f;
-};
-
-USTRUCT(BlueprintType)
-struct FTowerOffensiveStats
+struct FTowerStats
 {
 	GENERATED_BODY()
 
@@ -96,25 +92,22 @@ struct FTowerOffensiveStats
 	float DamageDealt = 0.f;
 
 	UPROPERTY(BlueprintReadWrite)
-	int NumberKills = 0;
+	int Kills = 0;
+
+	UPROPERTY(BlueprintReadWrite)
+	int TowersAffected = 0;
 };
 
 USTRUCT(BlueprintType)
-struct FTowerPassiveStats
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int TowerAffected = 0;
-};
-
-USTRUCT(BlueprintType)
-struct FTowerOffensiveData
+struct FTowerData
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	FTowerData TowerData;
+	int Cost = 0;
+
+	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	float Range = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Cooldown = 1.f;
@@ -133,46 +126,36 @@ struct FTowerOffensiveData
 
 	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
 	TArray<FAttackEffect> SplashAttackEffects;
-};
 
-USTRUCT(BlueprintType)
-struct FTowerOffensiveStruct : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	FString TowerName;
-
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	TSubclassOf<ATowerOffensive> TowerType;
-
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	TArray<FTowerOffensiveData> TowerData;
-};
-
-USTRUCT(BlueprintType)
-struct FTowerPassiveData
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	FTowerData TowerData;
-
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FPassiveEffect> PassiveEffects;
 };
 
 USTRUCT(BlueprintType)
-struct FTowerPassiveStruct : public FTableRowBase
+struct FTowerStruct : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
 	FString TowerName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<ATowerPassive> TowerType;
+	ETowerTypes TowerType = ETowerTypes::Offensive;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FTowerPassiveData> TowerData;
+	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	TSubclassOf<ATowerBase> TowerClass;
+
+	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	TArray<FTowerData> TowerData;
+};
+
+UCLASS()
+class UTowerUtility : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	static bool TraceAndUpdatePlot(ATowerBase* InTower, bool bInPlotTaken);
+	
 };
