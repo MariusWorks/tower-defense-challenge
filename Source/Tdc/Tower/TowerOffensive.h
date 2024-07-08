@@ -47,5 +47,11 @@ protected:
 	/* ITowerInterface Implementation */
 
 	virtual bool OnTowerSell_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnTowerApplyBuff_Implementation(FPassiveEffect InPassiveEffect) override;
+
+	UFUNCTION()
+	virtual void OnTowerRemoveBuff_Implementation(FPassiveEffect InPassiveEffect) override;
 	
 };

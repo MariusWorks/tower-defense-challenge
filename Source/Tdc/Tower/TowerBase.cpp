@@ -120,6 +120,11 @@ bool ATowerBase::OnTowerMove_Implementation()
 			}
 			UTowerUtility::TraceAndUpdatePlot(this, true);
 		}
+		else
+		{
+			SetTowerActive(false);
+			return true;
+		}
 	}
 	return false;
 }

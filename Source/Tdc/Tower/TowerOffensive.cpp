@@ -55,3 +55,13 @@ bool ATowerOffensive::OnTowerSell_Implementation()
 	return Super::OnTowerSell_Implementation();
 }
 
+void ATowerOffensive::OnTowerApplyBuff_Implementation(FPassiveEffect InPassiveEffect)
+{
+	
+}
+
+void ATowerOffensive::OnTowerRemoveBuff_Implementation(FPassiveEffect InPassiveEffect)
+{
+	
+}
+

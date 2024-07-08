@@ -28,13 +28,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	UFUNCTION()
 	virtual void OnTowerPlaced_Implementation() override;
-
-	UFUNCTION()
+	
 	virtual bool OnTowerSell_Implementation() override;
-
-	UFUNCTION()
+	
 	virtual bool OnTowerMove_Implementation() override;
 
 protected:

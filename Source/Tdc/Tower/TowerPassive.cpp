@@ -25,22 +25,19 @@ void ATowerPassive::Tick(float DeltaTime)
 
 void ATowerPassive::OnTowerPlaced_Implementation()
 {
-	// For each apply buff
-	
+	// We have overrides in Blueprint here
 	Super::OnTowerPlaced_Implementation();
 }
 
 bool ATowerPassive::OnTowerSell_Implementation()
 {
-	// For each remove buff
-	
+	// We have overrides in Blueprint here
 	return Super::OnTowerSell_Implementation();
 }
 
 bool ATowerPassive::OnTowerMove_Implementation()
 {
-	// For each remove buff
-	
+	// We have overrides in Blueprint here
 	return Super::OnTowerMove_Implementation();
 }
 

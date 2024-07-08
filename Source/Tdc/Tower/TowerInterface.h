@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TowerUtility.h"
 #include "UObject/Object.h"
 #include "TowerInterface.generated.h"
 
@@ -53,12 +54,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
 	void OnTowerKill();
-
-	// @RECALL Figure out what to do with these
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
-	void OnTowerApplyBuff();
+	void OnTowerApplyBuff(FPassiveEffect InPassiveEffect);
 
-	// @RECALL Figure out what to do with these
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
-	void OnTowerRemoveBuff();
+	void OnTowerRemoveBuff(FPassiveEffect InPassiveEffect);
 };

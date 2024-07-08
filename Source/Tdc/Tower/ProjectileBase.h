@@ -31,12 +31,9 @@ protected:
 	float InitialDistanceToTarget;
 
 protected:
-
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Projectile", meta = (ExposeOnSpawn))
-	int InTowerUpgradeIndex;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Projectile", meta = (ExposeOnSpawn))
-	FTowerStruct InTowerStruct;
+	FTowerData TowerData;
 	
 public:
 
@@ -62,6 +59,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void Fire(const FVector& InVelocity, AActor* InTarget);
 
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void UpdateProjectileStats(const FTowerData &InTowerData) {TowerData = InTowerData;}
+
 	UFUNCTION()
 	float GetDistanceToTarget() const;
+	
 };
