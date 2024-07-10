@@ -121,3 +121,15 @@ int UGameSubsystem::GetPlayerProjectilesSpawned()
 	}
 	return -1;
 }
+
+void UGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+
+	OnWaveInProgress.AddDynamic(this, &UGameSubsystem::SetWaveInProgress);
+}
+
+void UGameSubsystem::SetWaveInProgress(const bool bInWaveInProgress)
+{
+	bIsWaveInProgress = bInWaveInProgress;
+}

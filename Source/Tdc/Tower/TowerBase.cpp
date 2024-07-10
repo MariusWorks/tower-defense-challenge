@@ -52,6 +52,13 @@ void ATowerBase::BeginPlay()
 	if (GetGameSubsystem)
 	{
 		GameSubsystem = GetGameSubsystem;
+
+		bHasTowerBeenUsed = GameSubsystem->GetIsWaveInProgress();
+
+		if (!bHasTowerBeenUsed)
+		{
+			GameSubsystem->OnPlayerStartWave.AddDynamic(this, &ATowerBase::SetTowerHasBeenUsed);
+		}
 	}
 
 	UTowerSubsystem* GetTowerSubsystem = GetGameInstance()->GetSubsystem<UTowerSubsystem>();
@@ -77,6 +84,7 @@ bool ATowerBase::OnTowerUpgrade_Implementation()
 		{
 			UpgradeIndex++;
 			UpdateRadius();
+			TowerSubsystem->OnTowerSelected.Broadcast(this);
 			return true;
 		}
 	}
@@ -168,7 +176,7 @@ int ATowerBase::GetTowerAccumulatedCost()
 {
 	int AccumulatedCost = 0;
 
-	for (int i = 0; i < UpgradeIndex; i++)
+	for (int i = 0; i <= UpgradeIndex; i++)
 	{
 		AccumulatedCost += TowerStruct.TowerData[i].Cost;
 	}
@@ -176,9 +184,36 @@ int ATowerBase::GetTowerAccumulatedCost()
 	return AccumulatedCost;
 }
 
+int ATowerBase::GetTowerRefundPrice()
+{
+	const int TowerCost = GetTowerAccumulatedCost();
+	if (bHasTowerBeenUsed)
+	{
+		return TowerCost * 0.5f;
+	}
+	
+	return TowerCost;
+}
+
+int ATowerBase::GetTowerMovePrice()
+{
+	const int TowerCost = GetTowerAccumulatedCost();
+	if (bHasTowerBeenUsed)
+	{
+		return TowerCost * 0.25f;
+	}
+	return 0;
+}
+
 void ATowerBase::UpdateRadius()
 {
 	SphereRadius->SetSphereRadius(TowerStruct.TowerData[UpgradeIndex].Range);
 	DecalRange->SetWorldScale3D(FVector(TowerStruct.TowerData[UpgradeIndex].Range / 100.f));
+}
+
+void ATowerBase::SetTowerHasBeenUsed()
+{
+	bHasTowerBeenUsed = true;
+	GameSubsystem->OnPlayerStartWave.RemoveDynamic(this, &ATowerBase::SetTowerHasBeenUsed);
 }
 

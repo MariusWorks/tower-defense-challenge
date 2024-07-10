@@ -146,6 +146,20 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetTowerAccumulatedCost();
 
+	UFUNCTION(BlueprintPure)
+	int GetTowerRefundPrice();
+
+	UFUNCTION(BlueprintPure)
+	int GetTowerMovePrice();
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateRadius();
+
+	UFUNCTION(BlueprintPure)
+	bool GetHasTowerBeenUsed() {return bHasTowerBeenUsed;}
+
+private:
+
+	UFUNCTION()
+	void SetTowerHasBeenUsed();
 };

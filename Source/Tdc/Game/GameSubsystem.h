@@ -23,6 +23,7 @@ class TDC_API UGameSubsystem : public UGameInstanceSubsystem
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveStarted, FWave, InWaveInfo);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWaveFinished);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNextWaveReady);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveInProgress, bool, bInWaveInProgress);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeath, AEnemyBase*, InEnemyDeath);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartWaveCountdownTimer, float, InTime);
 	
@@ -40,6 +41,9 @@ class TDC_API UGameSubsystem : public UGameInstanceSubsystem
 	UPROPERTY()
 	ATdcPlayerState* PlayerState;
 
+	UPROPERTY()
+	bool bIsWaveInProgress;
+
 public:
 
 	// DELEGATES
@@ -56,6 +60,9 @@ public:
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnNextWaveReady OnNextWaveReady;
+
+	UPROPERTY(BlueprintCallable)
+	FOnWaveInProgress OnWaveInProgress;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnEnemyDeath OnEnemyDeath;
@@ -85,6 +92,18 @@ public:
 
 	// Functions
 
+public:
+	
+	/* Subsystem Init */
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+private:
+
+	UFUNCTION()
+	void SetWaveInProgress(bool bInWaveInProgress);
+
+public:
+	
 	UFUNCTION(BlueprintPure)
 	ATdcPlayerState* GetPlayerState();
 	
@@ -122,4 +141,11 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	int GetPlayerProjectilesSpawned();
+
+	UFUNCTION(BlueprintPure)
+	bool GetIsWaveInProgress() const {return bIsWaveInProgress;}
+
+public:
+
+	
 };
