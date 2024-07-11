@@ -96,6 +96,15 @@ struct FTowerStats
 
 	UPROPERTY(BlueprintReadWrite)
 	int TowersAffected = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bHasTowerBeenUsed = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	int UpgradeIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	int MaxUpgradeIndex = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -114,6 +123,10 @@ struct FTowerData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SplashRadius = 100.f;
+
+	/* Specify Next Tower Tier if tower should advance to next tier at this upgrade level */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<ATowerBase> NextTowerTier;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FAttack> Attacks;
@@ -141,6 +154,9 @@ struct FTowerStruct : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ETowerTypes TowerType = ETowerTypes::Offensive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor WidgetColor = FLinearColor::White;
 
 	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
 	TSubclassOf<ATowerBase> TowerClass;

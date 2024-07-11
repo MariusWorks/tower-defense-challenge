@@ -45,6 +45,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Tower Stats")
 	FTowerStats TowerStats;
 
+	UPROPERTY(EditDefaultsOnly ,BlueprintReadOnly)
+	UMaterialInterface* InvalidMaterial;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UMaterialInterface*> DefaultMaterials;
+
 private:
 
 	UPROPERTY()
@@ -55,15 +61,6 @@ private:
 	
 	UPROPERTY()
 	bool bTowerActive = false;
-
-	UPROPERTY()
-	int UpgradeIndex = 0;
-
-	UPROPERTY()
-	int MaxUpgradeIndex = 0;
-
-	UPROPERTY()
-	bool bHasTowerBeenUsed = false;
 	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnUpdateStats OnUpdateStats;
@@ -109,38 +106,55 @@ public:
 	virtual void OnTowerKill_Implementation() override;
 
 	UFUNCTION()
+	virtual void OnSetPlacementValid_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnSetPlacementInvalid_Implementation() override;
+
+	/* End of ITower Interface Implementation */
+
+	UFUNCTION()
 	void OnStatsUpdate();
 
 	/*  */
+
+	UFUNCTION()
+	virtual void HandleTowerNextTier();
 	
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void SetTowerActive(const bool bInTowerActive) {bTowerActive = bInTowerActive;}
 	
 	UFUNCTION(BlueprintCallable)
-	void SetUpgradeIndex(const int InUpgradeIndex) {UpgradeIndex = InUpgradeIndex;}
+	void SetUpgradeIndex(const int InUpgradeIndex) {TowerStats.UpgradeIndex = InUpgradeIndex;}
 	
 	UFUNCTION(BlueprintCallable)
-	void SetMaxUpgradeIndex(const int InMaxUpgradeIndex) {MaxUpgradeIndex = InMaxUpgradeIndex;}
+	void SetMaxUpgradeIndex(const int InMaxUpgradeIndex) {TowerStats.MaxUpgradeIndex = InMaxUpgradeIndex;}
+
+	UFUNCTION()
+	void SetTowerStruct(const FTowerStruct& InTowerStruct) {TowerStruct = InTowerStruct;}
+	
+	UFUNCTION()
+	void SetTowerStats(const FTowerStats& InTowerStats) {TowerStats = InTowerStats;}
 
 	// Getters
 	UFUNCTION(BlueprintPure)
 	bool GetTowerActive() const {return bTowerActive;}
 
 	UFUNCTION(BlueprintPure)
-	int GetTowerUpgradeIndex() const {return UpgradeIndex;}
+	int GetTowerUpgradeIndex() const {return TowerStats.UpgradeIndex;}
 
 	UFUNCTION(BlueprintPure)
-	int GetTowerMaxUpgradeIndex() const {return MaxUpgradeIndex;}
+	int GetTowerMaxUpgradeIndex() const {return TowerStats.MaxUpgradeIndex;}
 
 	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
-	float GetTowerRange() const {return TowerStruct.TowerData[UpgradeIndex].Range;}
+	float GetTowerRange() const {return TowerStruct.TowerData[TowerStats.UpgradeIndex].Range;}
 
 	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
-	int GetTowerCost() const {return TowerStruct.TowerData[UpgradeIndex].Cost;}
+	int GetTowerCost() const {return TowerStruct.TowerData[TowerStats.UpgradeIndex].Cost;}
 
 	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
-	float GetTowerCooldown() const {return TowerStruct.TowerData[UpgradeIndex].Cooldown;}
+	float GetTowerCooldown() const {return TowerStruct.TowerData[TowerStats.UpgradeIndex].Cooldown;}
 
 	// Helpers
 	UFUNCTION(BlueprintPure)
@@ -156,7 +170,7 @@ public:
 	void UpdateRadius();
 
 	UFUNCTION(BlueprintPure)
-	bool GetHasTowerBeenUsed() {return bHasTowerBeenUsed;}
+	bool GetHasTowerBeenUsed() {return TowerStats.bHasTowerBeenUsed;}
 
 private:
 

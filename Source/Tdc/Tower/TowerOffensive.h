@@ -53,5 +53,9 @@ protected:
 
 	UFUNCTION()
 	virtual void OnTowerRemoveBuff_Implementation(FPassiveEffect InPassiveEffect) override;
+
+	/* End of ITower Interface Implementation */
+
+	virtual void HandleTowerNextTier() override;
 	
 };

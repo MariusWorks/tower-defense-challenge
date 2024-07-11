@@ -46,16 +46,18 @@ void ATowerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MaxUpgradeIndex = TowerStruct.TowerData.Num() - 1;
+	TowerStats.MaxUpgradeIndex = TowerStruct.TowerData.Num() - 1;
+
+	DefaultMaterials = TowerMesh->GetMaterials();
 
 	UGameSubsystem* GetGameSubsystem = GetGameInstance()->GetSubsystem<UGameSubsystem>();
 	if (GetGameSubsystem)
 	{
 		GameSubsystem = GetGameSubsystem;
 
-		bHasTowerBeenUsed = GameSubsystem->GetIsWaveInProgress();
+		TowerStats.bHasTowerBeenUsed = GameSubsystem->GetIsWaveInProgress();
 
-		if (!bHasTowerBeenUsed)
+		if (!TowerStats.bHasTowerBeenUsed)
 		{
 			GameSubsystem->OnPlayerStartWave.AddDynamic(this, &ATowerBase::SetTowerHasBeenUsed);
 		}
@@ -77,12 +79,20 @@ void ATowerBase::Tick(float DeltaTime)
 
 bool ATowerBase::OnTowerUpgrade_Implementation()
 {
-	if (UpgradeIndex + 1 <= TowerStruct.TowerData.Num() - 1)
+	if (TowerStats.UpgradeIndex + 1 <= TowerStruct.TowerData.Num() - 1)
 	{
-		int TowerCost = TowerStruct.TowerData[UpgradeIndex + 1].Cost;
+		int TowerCost = TowerStruct.TowerData[TowerStats.UpgradeIndex + 1].Cost;
 		if (GameSubsystem->SubtractPlayerGold(TowerCost))
 		{
-			UpgradeIndex++;
+			TowerStats.UpgradeIndex++;
+			
+			if (TowerStruct.TowerData[TowerStats.UpgradeIndex].NextTowerTier)
+			{
+				
+				HandleTowerNextTier();
+				return true;
+			}
+			
 			UpdateRadius();
 			TowerSubsystem->OnTowerSelected.Broadcast(this);
 			return true;
@@ -98,7 +108,7 @@ bool ATowerBase::OnTowerSell_Implementation()
 		if (GameSubsystem)
 		{
 			const int TowerCost = GetTowerAccumulatedCost();
-			if (bHasTowerBeenUsed)
+			if (TowerStats.bHasTowerBeenUsed)
 			{
 				GameSubsystem->AddPlayerGold(TowerCost / 0.5f);
 			}
@@ -119,7 +129,7 @@ bool ATowerBase::OnTowerMove_Implementation()
 	if (UTowerUtility::TraceAndUpdatePlot(this, false))
 	{
 		const int MoveCost = GetTowerAccumulatedCost();
-		if (bHasTowerBeenUsed)
+		if (TowerStats.bHasTowerBeenUsed)
 		{
 			if (GameSubsystem->SubtractPlayerGold(MoveCost * 0.25))
 			{
@@ -167,16 +177,71 @@ void ATowerBase::OnTowerKill_Implementation()
 	OnUpdateStats.Broadcast();
 }
 
+void ATowerBase::OnSetPlacementValid_Implementation()
+{
+	if (!DefaultMaterials[0])
+	{
+		UE_LOG(LogActor, Warning, TEXT("%s | Something went wrong when assigning default materials back to actor"), *this->GetName());
+		return;
+	}
+	
+	if (TowerMesh->GetMaterial(0) != DefaultMaterials[0])
+	{
+		WeaponBaseMesh->SetHiddenInGame(false);
+		WeaponPropMesh->SetHiddenInGame(false);
+		
+		for (int i = 0; i < TowerMesh->GetNumMaterials(); i++)
+		{
+			TowerMesh->SetMaterial(i, DefaultMaterials[i]);
+		}
+	}
+}
+
+void ATowerBase::OnSetPlacementInvalid_Implementation()
+{
+	if (!InvalidMaterial)
+	{
+		UE_LOG(LogActor, Warning, TEXT("%s | Invalid Material is not set for Tower Actor"), *this->GetName());
+		return;
+	}
+
+	if (TowerMesh->GetMaterial(0) != InvalidMaterial)
+	{
+		WeaponBaseMesh->SetHiddenInGame(true);
+		WeaponPropMesh->SetHiddenInGame(true);
+		
+		for (int i = 0; i < TowerMesh->GetNumMaterials(); i++)
+		{
+			TowerMesh->SetMaterial(i, InvalidMaterial);
+		}
+	}
+}
+
 void ATowerBase::OnStatsUpdate()
 {
 	TowerSubsystem->OnTowerSelected.Broadcast(this);
+}
+
+void ATowerBase::HandleTowerNextTier()
+{
+	const FTransform SpawnTransform = GetActorTransform();
+	ATowerBase* NewTower = GetWorld()->SpawnActorDeferred<ATowerBase>(TowerStruct.TowerData[TowerStats.UpgradeIndex].NextTowerTier, SpawnTransform, GetOwner(), GetInstigator());
+	if (NewTower)
+	{
+		NewTower->SetTowerStruct(TowerStruct);
+		NewTower->SetTowerStats(TowerStats);
+		NewTower->FinishSpawning(SpawnTransform, false);
+		Execute_OnTowerPlaced(NewTower);
+		Execute_OnTowerSelected(NewTower);
+		this->Destroy();
+	}
 }
 
 int ATowerBase::GetTowerAccumulatedCost()
 {
 	int AccumulatedCost = 0;
 
-	for (int i = 0; i <= UpgradeIndex; i++)
+	for (int i = 0; i <= TowerStats.UpgradeIndex; i++)
 	{
 		AccumulatedCost += TowerStruct.TowerData[i].Cost;
 	}
@@ -187,7 +252,7 @@ int ATowerBase::GetTowerAccumulatedCost()
 int ATowerBase::GetTowerRefundPrice()
 {
 	const int TowerCost = GetTowerAccumulatedCost();
-	if (bHasTowerBeenUsed)
+	if (TowerStats.bHasTowerBeenUsed)
 	{
 		return TowerCost * 0.5f;
 	}
@@ -198,7 +263,7 @@ int ATowerBase::GetTowerRefundPrice()
 int ATowerBase::GetTowerMovePrice()
 {
 	const int TowerCost = GetTowerAccumulatedCost();
-	if (bHasTowerBeenUsed)
+	if (TowerStats.bHasTowerBeenUsed)
 	{
 		return TowerCost * 0.25f;
 	}
@@ -207,13 +272,13 @@ int ATowerBase::GetTowerMovePrice()
 
 void ATowerBase::UpdateRadius()
 {
-	SphereRadius->SetSphereRadius(TowerStruct.TowerData[UpgradeIndex].Range);
-	DecalRange->SetWorldScale3D(FVector(TowerStruct.TowerData[UpgradeIndex].Range / 100.f));
+	SphereRadius->SetSphereRadius(TowerStruct.TowerData[TowerStats.UpgradeIndex].Range);
+	DecalRange->SetWorldScale3D(FVector(TowerStruct.TowerData[TowerStats.UpgradeIndex].Range / 100.f));
 }
 
 void ATowerBase::SetTowerHasBeenUsed()
 {
-	bHasTowerBeenUsed = true;
+	TowerStats.bHasTowerBeenUsed = true;
 	GameSubsystem->OnPlayerStartWave.RemoveDynamic(this, &ATowerBase::SetTowerHasBeenUsed);
 }
 

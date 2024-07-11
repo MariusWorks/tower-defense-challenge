@@ -60,4 +60,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
 	void OnTowerRemoveBuff(FPassiveEffect InPassiveEffect);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
+	void OnSetPlacementValid();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
+	void OnSetPlacementInvalid();
 };

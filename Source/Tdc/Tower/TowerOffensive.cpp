@@ -65,3 +65,13 @@ void ATowerOffensive::OnTowerRemoveBuff_Implementation(FPassiveEffect InPassiveE
 	
 }
 
+void ATowerOffensive::HandleTowerNextTier()
+{
+	if (SpawnedProjectile)
+	{
+		SpawnedProjectile->Destroy();
+	}
+	
+	Super::HandleTowerNextTier();
+}
+
