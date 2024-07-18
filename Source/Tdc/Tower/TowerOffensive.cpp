@@ -55,6 +55,73 @@ bool ATowerOffensive::OnTowerSell_Implementation()
 	return Super::OnTowerSell_Implementation();
 }
 
+void ATowerOffensive::OnNextTargeting_Implementation(ETargetingTypes& OutTargetingType)
+{
+	switch (TargetPriority)
+	{
+	case ETargetingTypes::First:
+		TargetPriority = ETargetingTypes::Last;
+		break;
+
+	case ETargetingTypes::Last:
+		TargetPriority = ETargetingTypes::Fastest;
+		break;
+
+	case ETargetingTypes::Fastest:
+		TargetPriority = ETargetingTypes::Weakest;
+		break;
+
+	case ETargetingTypes::Weakest:
+		TargetPriority = ETargetingTypes::Strongest;
+		break;
+
+	case ETargetingTypes::Strongest:
+		TargetPriority = ETargetingTypes::First;
+		break;
+		
+	default:
+		break;
+	}
+
+	OutTargetingType = TargetPriority;
+}
+
+void ATowerOffensive::OnPreviousTargeting_Implementation(ETargetingTypes& OutTargetingType)
+{
+	switch (TargetPriority)
+	{
+	case ETargetingTypes::First:
+		TargetPriority = ETargetingTypes::Strongest;
+		break;
+
+	case ETargetingTypes::Last:
+		TargetPriority = ETargetingTypes::First;
+		break;
+
+	case ETargetingTypes::Fastest:
+		TargetPriority = ETargetingTypes::Last;
+		break;
+
+	case ETargetingTypes::Weakest:
+		TargetPriority = ETargetingTypes::Fastest;
+		break;
+
+	case ETargetingTypes::Strongest:
+		TargetPriority = ETargetingTypes::Weakest;
+		break;
+		
+	default:
+		break;
+	}
+
+	OutTargetingType = TargetPriority;
+}
+
+void ATowerOffensive::GetTowerTargeting_Implementation(ETargetingTypes& OutTargetingType)
+{
+	OutTargetingType = TargetPriority;
+}
+
 void ATowerOffensive::OnTowerApplyBuff_Implementation(FPassiveEffect InPassiveEffect)
 {
 	

@@ -9,6 +9,16 @@ class ATowerPassive;
 class ATowerBase;
 
 UENUM(BlueprintType)
+enum class ETargetingTypes : uint8
+{
+	First,
+	Last,
+	Fastest,
+	Weakest,
+	Strongest
+};
+
+UENUM(BlueprintType)
 enum class ETowerTypes : uint8
 {
 	Offensive,

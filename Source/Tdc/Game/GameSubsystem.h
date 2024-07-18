@@ -21,7 +21,7 @@ class TDC_API UGameSubsystem : public UGameInstanceSubsystem
 
 	// Wave Communication
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerStartWave);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveStarted, FWave, InWaveInfo);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveStarted, FCycle, InCycleInfo);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWaveFinished);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNextWaveReady);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveInProgress, bool, bInWaveInProgress);

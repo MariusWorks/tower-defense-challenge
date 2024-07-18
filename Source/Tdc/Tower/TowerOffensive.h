@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Tower")
 	TArray<AEnemyBase*> Enemies;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Tower|Targeting")
+	ETargetingTypes TargetPriority;
+
 public:
 
 	ATowerOffensive();
@@ -47,6 +50,15 @@ protected:
 	/* ITowerInterface Implementation */
 
 	virtual bool OnTowerSell_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnNextTargeting_Implementation(ETargetingTypes& OutTargetingType) override;
+
+	UFUNCTION()
+	virtual void OnPreviousTargeting_Implementation(ETargetingTypes& OutTargetingType) override;
+
+	UFUNCTION()
+	virtual void GetTowerTargeting_Implementation(ETargetingTypes& OutTargetingType) override;
 
 	UFUNCTION()
 	virtual void OnTowerApplyBuff_Implementation(FPassiveEffect InPassiveEffect) override;

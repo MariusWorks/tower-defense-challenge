@@ -26,12 +26,11 @@ struct FEnemyData
 };
 
 USTRUCT(BlueprintType)
-struct FWaveUnit
+struct FCycleUnit
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	//TSoftClassPtr<AEnemyBase> EnemySubclass;
 	TSubclassOf<AEnemyBase> EnemyClass;
 	
 	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
@@ -42,12 +41,12 @@ struct FWaveUnit
 };
 
 USTRUCT(BlueprintType)
-struct FWave
+struct FCycle
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
-	TArray<FWaveUnit> WaveUnits;
+	TArray<FCycleUnit> CycleUnits;
 };
 
 USTRUCT(BlueprintType)
@@ -62,7 +61,14 @@ struct FLevelWaves : public FTableRowBase
 	UTexture2D* LevelImage;
 
 	UPROPERTY(EditAnywhere ,BlueprintReadOnly)
-	TArray<FWave> Waves;
+	FCycle Cycle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int LevelCycles = 5;
+
+	/* Percent Increase in 0.1 format */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ScalingMultiplier = 0.1f;
 
 	UPROPERTY(EditAnywhere ,BlueprintReadOnly)
 	int StartingGold = 50;

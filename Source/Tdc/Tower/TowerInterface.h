@@ -50,6 +50,15 @@ public:
 	void OnTowerDeselected();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
+	void OnNextTargeting(ETargetingTypes &OutTargetingType);
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
+	void OnPreviousTargeting(ETargetingTypes &OutTargetingType);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
+	void GetTowerTargeting(ETargetingTypes &OutTargetingType);
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
 	void OnTowerDamageDealt(float InDamageDealt);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Tower")
