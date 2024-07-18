@@ -35,16 +35,22 @@ class TDC_API ATdcPlayerState : public APlayerState
 	UPROPERTY()
 	UGameSubsystem* GameSubsystem;
 
-public:
+	UFUNCTION()
+	UGameSubsystem* GetGameSubsystem();
 
-	/* AActor Defaults */
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	void BroadcastGold();
+
+public:
 	
 	UFUNCTION(BlueprintCallable, Category=PlayerState)
 	void AddGold(const int InGold);
 
 	UFUNCTION(BlueprintCallable, Category=PlayerState)
 	bool SubtractGold(const int InGold);
+
+	UFUNCTION(BlueprintCallable, Category=PlayerState)
+	void SetGold(const int InGold);
 
 	UFUNCTION(BlueprintCallable, Category=PlayerState)
 	void AddKills(const int InKills) {Kills += InKills;}
@@ -59,6 +65,8 @@ public:
 	void AddProjectilesSpawned(const int InProjectilesSpawned) {ProjectilesSpawned += InProjectilesSpawned;}
 
 	// Getters
+
+	
 
 	UFUNCTION(BlueprintPure, Category=PlayerState)
 	int GetGold() const {return Gold;}

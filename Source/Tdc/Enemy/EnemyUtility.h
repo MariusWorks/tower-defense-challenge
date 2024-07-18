@@ -55,15 +55,21 @@ struct FLevelWaves : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText LevelName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UTexture2D* LevelImage;
+
+	UPROPERTY(EditAnywhere ,BlueprintReadOnly)
 	TArray<FWave> Waves;
 
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere ,BlueprintReadOnly)
 	int StartingGold = 50;
 
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere ,BlueprintReadOnly)
 	int StartingLives = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TimeBetweenWaves = 30.f;
 };

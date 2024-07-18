@@ -237,6 +237,33 @@ void ATowerBase::HandleTowerNextTier()
 	}
 }
 
+float ATowerBase::GetTowerRange() const
+{
+	if (TowerStats.UpgradeIndex > TowerStruct.TowerData.Num() - 1)
+	{
+		return 0.f;
+	}
+	return TowerStruct.TowerData[TowerStats.UpgradeIndex].Range;
+}
+
+int ATowerBase::GetTowerCost() const
+{
+	if (TowerStats.UpgradeIndex > TowerStruct.TowerData.Num() - 1)
+	{
+		return 0.f;
+	}
+	return TowerStruct.TowerData[TowerStats.UpgradeIndex].Cost;
+}
+
+float ATowerBase::GetTowerCooldown() const
+{
+	if (TowerStats.UpgradeIndex > TowerStruct.TowerData.Num() - 1)
+	{
+		return 1.f;
+	}
+	return TowerStruct.TowerData[TowerStats.UpgradeIndex].Cooldown;
+}
+
 int ATowerBase::GetTowerAccumulatedCost()
 {
 	int AccumulatedCost = 0;
@@ -272,8 +299,9 @@ int ATowerBase::GetTowerMovePrice()
 
 void ATowerBase::UpdateRadius()
 {
-	SphereRadius->SetSphereRadius(TowerStruct.TowerData[TowerStats.UpgradeIndex].Range);
-	DecalRange->SetWorldScale3D(FVector(TowerStruct.TowerData[TowerStats.UpgradeIndex].Range / 100.f));
+	const float TowerRange = this->GetTowerRange();
+	SphereRadius->SetSphereRadius(TowerRange);
+	DecalRange->SetWorldScale3D(FVector(TowerRange / 100.f));
 }
 
 void ATowerBase::SetTowerHasBeenUsed()

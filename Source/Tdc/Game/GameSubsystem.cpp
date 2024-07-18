@@ -3,7 +3,30 @@
 
 #include "GameSubsystem.h"
 
+#include "TdcGameState.h"
+#include "GameFramework/GameModeBase.h"
 #include "Tdc/Player/TdcPlayerState.h"
+
+void UGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+
+	OnWaveInProgress.AddDynamic(this, &UGameSubsystem::SetWaveInProgress);
+	OnEnemyReachedEnd.AddDynamic(this, &UGameSubsystem::UGameSubsystem::OnEnemyReachedEndEvent);
+}
+
+void UGameSubsystem::SetWaveInProgress(const bool bInWaveInProgress)
+{
+	bIsWaveInProgress = bInWaveInProgress;
+}
+
+void UGameSubsystem::OnEnemyReachedEndEvent()
+{
+	if (GetGameState())
+	{
+		GameState->SubtractLives(1);
+	}
+}
 
 ATdcPlayerState* UGameSubsystem::GetPlayerState()
 {
@@ -28,6 +51,29 @@ ATdcPlayerState* UGameSubsystem::GetPlayerState()
 	return nullptr;
 }
 
+ATdcGameState* UGameSubsystem::GetGameState()
+{
+	if (!GetWorld() || !GetWorld()->GetAuthGameMode())
+	{
+		UE_LOG(LogActor, Error, TEXT("GameSubsystem: Unable to get World or Gamemode!"))
+		return nullptr;
+	}
+	
+	if (GameState)
+	{
+		return GameState;
+	}
+	
+	ATdcGameState* MyGameState = GetWorld()->GetAuthGameMode()->GetGameState<ATdcGameState>();
+	if (MyGameState)
+	{
+		GameState = MyGameState;
+		return MyGameState;
+	}
+	
+	return nullptr;
+}
+
 void UGameSubsystem::AddPlayerGold(const int InGoldToAdd)
 {
 	if (GetPlayerState())
@@ -43,6 +89,38 @@ bool UGameSubsystem::SubtractPlayerGold(const int InGoldToSubtract)
 		return PlayerState->SubtractGold(InGoldToSubtract);
 	}
 	return false;
+}
+
+void UGameSubsystem::SetPlayerGold(const int InGoldToSet)
+{
+	if (GetPlayerState())
+	{
+		PlayerState->SetGold(InGoldToSet);
+	}
+}
+
+void UGameSubsystem::AddGameLives(const int InLivesToAdd)
+{
+	if (GetGameState())
+	{
+		GameState->AddLives(InLivesToAdd);
+	}
+}
+
+void UGameSubsystem::SubtractGameLives(const int InLivesToSubtract)
+{
+	if (GetGameState())
+	{
+		GameState->SubtractLives(InLivesToSubtract);
+	}
+}
+
+void UGameSubsystem::SetGameLives(const int InLivesToSet)
+{
+	if (GetGameState())
+	{
+		GameState->SetLives(InLivesToSet);
+	}
 }
 
 void UGameSubsystem::AddPlayerKills(const int InKills)
@@ -86,6 +164,15 @@ int UGameSubsystem::GetPlayerGold()
 	return -1;
 }
 
+int UGameSubsystem::GetGameLives()
+{
+	if (GetGameState())
+	{
+		return GameState->GetLives();
+	}
+	return -1;
+}
+
 int UGameSubsystem::GetPlayerKills()
 {
 	if (GetPlayerState())
@@ -120,16 +207,4 @@ int UGameSubsystem::GetPlayerProjectilesSpawned()
 		return PlayerState->GetProjectilesSpawned();
 	}
 	return -1;
-}
-
-void UGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
-{
-	Super::Initialize(Collection);
-
-	OnWaveInProgress.AddDynamic(this, &UGameSubsystem::SetWaveInProgress);
-}
-
-void UGameSubsystem::SetWaveInProgress(const bool bInWaveInProgress)
-{
-	bIsWaveInProgress = bInWaveInProgress;
 }

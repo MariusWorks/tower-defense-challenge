@@ -148,13 +148,13 @@ public:
 	int GetTowerMaxUpgradeIndex() const {return TowerStats.MaxUpgradeIndex;}
 
 	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
-	float GetTowerRange() const {return TowerStruct.TowerData[TowerStats.UpgradeIndex].Range;}
+	float GetTowerRange() const;
 
 	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
-	int GetTowerCost() const {return TowerStruct.TowerData[TowerStats.UpgradeIndex].Cost;}
+	int GetTowerCost() const;
 
 	UFUNCTION(BlueprintPure, Category = "Tower|Stats")
-	float GetTowerCooldown() const {return TowerStruct.TowerData[TowerStats.UpgradeIndex].Cooldown;}
+	float GetTowerCooldown() const;
 
 	// Helpers
 	UFUNCTION(BlueprintPure)

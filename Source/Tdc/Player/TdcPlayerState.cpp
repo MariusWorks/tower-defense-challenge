@@ -5,21 +5,39 @@
 
 #include "Tdc/Game/GameSubsystem.h"
 
-void ATdcPlayerState::BeginPlay()
+UGameSubsystem* ATdcPlayerState::GetGameSubsystem()
 {
-	Super::BeginPlay();
-	
-	UGameSubsystem* GetGameSubsystem = GetGameInstance()->GetSubsystem<UGameSubsystem>();
-	if (GetGameSubsystem)
+	if (GameSubsystem)
 	{
-		GameSubsystem = GetGameSubsystem;
+		return GameSubsystem;
+	}
+	else
+	{
+		if (UGameSubsystem* GetGameSubsystem = GetGameInstance()->GetSubsystem<UGameSubsystem>())
+		{
+			GameSubsystem = GetGameSubsystem;
+			return GameSubsystem;
+		}
+		else
+		{
+			UE_LOG(LogActor, Error, TEXT("Could not get Subsystem from GameInstance!"));
+			return nullptr;
+		}
+	}
+}
+
+void ATdcPlayerState::BroadcastGold()
+{
+	if (const UGameSubsystem* MyGameSubsystem = GetGameSubsystem())
+	{
+		MyGameSubsystem->OnGoldUpdated.Broadcast(Gold);
 	}
 }
 
 void ATdcPlayerState::AddGold(const int InGold)
 {
 	Gold += InGold;
-	GameSubsystem->OnGoldUpdated.Broadcast(Gold);
+	BroadcastGold();
 }
 
 bool ATdcPlayerState::SubtractGold(const int InGold)
@@ -29,8 +47,14 @@ bool ATdcPlayerState::SubtractGold(const int InGold)
 		return false;
 	}
 	Gold -= InGold;
-	GameSubsystem->OnGoldUpdated.Broadcast(Gold);
+	BroadcastGold();
 	return true;
+}
+
+void ATdcPlayerState::SetGold(const int InGold)
+{
+	Gold = InGold;
+	BroadcastGold();
 }
 
 void ATdcPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
