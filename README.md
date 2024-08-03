@@ -3,6 +3,9 @@ A project for my 30 day tower defence challenge using Unreal Engine 5.3
 
 ## Info
 
+Challenge is over, total time spent: 60 hours
+Might finish it at some point, was really fun to do
+
 Streamed over on https://twitch.tv/mariusworks
 
 * Time: 01.07.24 - 31.07.24
